@@ -1,7 +1,8 @@
 import os
 import sys
 from subprocess import Popen, PIPE
-
+from rich.console import Console  # Add at line 4
+con = Console()  # Add at line 6
 MINICONDA_PATH = "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
 MINICONDA_INSTALLER = MINICONDA_PATH.split("/")[-1]
 has_conda = "conda version" in os.popen("conda --version").read()
