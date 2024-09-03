@@ -1,25 +1,29 @@
 import os
 import sys
 from subprocess import Popen, PIPE
-from rich.console import Console  # Add at line 4
-con = Console()  # Add at line 6
+
+from rich.console import Console  # Import Console from the rich library
+
+con = Console()  # Initialize con as an instance of Console
+
 MINICONDA_PATH = "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
 MINICONDA_INSTALLER = MINICONDA_PATH.split("/")[-1]
 has_conda = "conda version" in os.popen("conda --version").read()
 has_qiime = "qiime version" in os.popen("qiime --version").read()
-con = None  # Assuming con is defined elsewhere in your script
 
 def cleanup():
     """Clean up any temporary files or processes."""
-    # Add your cleanup code here
     pass
 
 def run_and_check(
-        args, check, message, failure, success, console=con, env_vars=None,
+        args, check, message, failure, success, console=None, env_vars=None,
         check_returncode=True
 ):
     """Run a command and check that it worked."""
-    console.log(message)
+    if console:
+        console.log(message)
+    else:
+        print(message)
     env_vars = {**os.environ, **env_vars} if env_vars else os.environ
     r = Popen(args, env=env_vars, stdout=PIPE, stderr=PIPE,
               universal_newlines=True)
@@ -28,9 +32,15 @@ def run_and_check(
 
     if (check_returncode and r.returncode == 0 and check in out) or \
             (not check_returncode and check in out):
-        console.log("[blue]%s[/blue]" % success)
+        if console:
+            console.log("[blue]%s[/blue]" % success)
+        else:
+            print(success)
     else:
-        console.log("[red]%s[/red]" % failure, out)
+        if console:
+            console.log("[red]%s[/red]" % failure, out)
+        else:
+            print(failure, out)
         cleanup()
         sys.exit(1)
 
@@ -52,7 +62,8 @@ if __name__ == "__main__":
             "saved",
             ":snake: Downloading miniconda...",
             "failed downloading miniconda :sob:",
-            ":snake: Done."
+            ":snake: Done.",
+            console=con  # Explicitly pass the console object
         )
 
         run_and_check(
@@ -60,7 +71,8 @@ if __name__ == "__main__":
             "installation finished.",
             ":snake: Installing miniconda...",
             "could not install miniconda :sob:",
-            ":snake: Installed miniconda to `/usr/local` :snake:"
+            ":snake: Installed miniconda to `/usr/local` :snake:",
+            console=con  # Explicitly pass the console object
         )
     else:
         con.log(":snake: Miniconda is already installed. Skipped.")
@@ -75,7 +87,8 @@ if __name__ == "__main__":
             "mamba",
             ":mag: Installing mamba...",
             "could not install mamba :sob:",
-            ":mag: Done."
+            ":mag: Done.",
+            console=con  # Explicitly pass the console object
         )
 
         run_and_check(
@@ -94,7 +107,8 @@ if __name__ == "__main__":
             "Extracting Packages: ...working... done",
             ":mag: Installing QIIME 2. This may take a little bit.\n :clock1:",
             "could not install QIIME 2 :sob:",
-            ":mag: Done."
+            ":mag: Done.",
+            console=con  # Explicitly pass the console object
         )
 
         run_and_check(
@@ -103,7 +117,8 @@ if __name__ == "__main__":
             ":mag: Installing redbiom. "
             "This may take a little bit.\n :clock1:",
             "could not install redbiom :sob:",
-            ":mag: Done."
+            ":mag: Done.",
+            console=con  # Explicitly pass the console object
         )
 
         # this is a hack to make SRA tools work: this command fails but somehow
@@ -113,7 +128,8 @@ if __name__ == "__main__":
             "Successfully installed empress-",
             ":evergreen_tree: Installing Empress...",
             "could not install Empress :sob:",
-            ":evergreen_tree: Done."
+            ":evergreen_tree: Done.",
+            console=con  # Explicitly pass the console object
         )
     else:
         con.log(":mag: QIIME 2 is already installed. Skipped.")
@@ -123,7 +139,8 @@ if __name__ == "__main__":
         "QIIME 2 release:",
         ":bar_chart: Checking that QIIME 2 command line works...",
         "QIIME 2 command line does not seem to work :sob:",
-        ":bar_chart: QIIME 2 command line looks good :tada:"
+        ":bar_chart: QIIME 2 command line looks good :tada:",
+        console=con  # Explicitly pass the console object
     )
 
     if sys.version_info[0:2] == (3, 8):
