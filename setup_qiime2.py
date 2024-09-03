@@ -87,7 +87,7 @@ if __name__ == "__main__":
 # Check if mamba is already installed
 mamba_installed = "mamba version" in os.popen("mamba --version").read()
 
-    if not has_qiime and not mamba_installed:
+if not has_qiime and not mamba_installed:
         run_and_check(
             ["conda", "install", "mamba", "-y", "-n", "base",
              "-c", "conda-forge"],
