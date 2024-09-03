@@ -134,7 +134,7 @@ if not has_qiime and not mamba_installed:
             "could not install Empress :sob:",
             ":evergreen_tree: Done."
         )
-    else:
+else:
         con.log(":mag: QIIME 2 is already installed. Skipped.")
 
     run_and_check(
